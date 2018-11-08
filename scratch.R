@@ -25,15 +25,30 @@ file_names_A <- str_subset(file_names, pattern = "A")
 # Background reading here:
 # https://r4ds.had.co.nz/iteration.html#the-map-functions
 
-x <- map_dfr(file_names, read_csv)
+x <- map_dfr(file_names, read_csv, .id = "source")
 
 # 5. Read in everything and also add a new variable, source, which records the
 # file name from which the data came.
 
+x <- map_dfr(file_names, read_csv, .id = "source")
+  
 # 6. Find the 4 files with the largest number of observations.
+
+x %>% 
+  group_by(source) %>% 
+  count() %>% 
+  arrange(desc(n))
 
 # 7. Write a function which takes a character string like "A" and then reads in
 # all the files which have "A" in the name.
+
+read_A <- function(x){
+  
+  file_names <- dir_ls("data/")
+  file_names_A <- str_subset(file_names, pattern = x)
+  output <- map_dfr(file_names_A, read_csv, .id = "source")
+  output
+}
 
 # 8. Create a Shiny App which displays the histogram of b, allowing the user to
 # subset the display for specific values of c.
